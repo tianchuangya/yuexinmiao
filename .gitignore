@@ -24,3 +24,6 @@ TestResults.xml
 mooncat_env/
 venv/
 .conda
+config.yaml
+skill/skill.md
+__pycache__/
