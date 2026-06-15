@@ -4,12 +4,10 @@ import os
 import json
 import uuid
 from datetime import datetime
+from utils.paths import get_conversations_dir
 
 
-CONVERSATIONS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "conversations"
-)
+CONVERSATIONS_DIR = get_conversations_dir()
 
 
 class Conversation:

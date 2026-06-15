@@ -28,8 +28,9 @@ class ChatInput(QWidget):
         self._messages_displayed = []   # 已显示的 {role, content}，用于重建视图
 
         # 头像路径
-        _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self._avatar_path = os.path.join(_root, "image", "yuexinmiao.png")
+        from utils.paths import get_image_dir
+        _img_dir = get_image_dir()
+        self._avatar_path = os.path.join(_img_dir, "yuexinmiao.png")
 
         self._init_ui()
 

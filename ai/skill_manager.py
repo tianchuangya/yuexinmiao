@@ -2,13 +2,11 @@
 
 import os
 from .conversation import Conversation
+from utils.paths import get_skill_file, get_skill_dir
 
 
-SKILL_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "skill"
-)
-SKILL_FILE = os.path.join(SKILL_DIR, "skill.md")
+SKILL_DIR = get_skill_dir()
+SKILL_FILE = get_skill_file()
 
 INITIAL_SKILL_CONTENT = """# 月星猫 Skill
 

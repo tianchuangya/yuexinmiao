@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt
 from . import constants
 from .pet_window import PetWindow
 from utils.config import load_config, get_ai_config, get_app_config
+from utils.paths import get_image_dir
 
 
 def start():
@@ -19,7 +20,7 @@ def start():
     # ---- 加载配置并赋值到 constants ----
     config = load_config()
     app_cfg = config.get("app", {})
-    constants.IMAGE_BASE_DIR = app_cfg.get("image_base_dir", "image")
+    constants.IMAGE_BASE_DIR = app_cfg.get("image_base_dir", get_image_dir())
     constants.STARTUP_GIF = app_cfg.get("startup_gif", "休闲/冒泡.gif")
     constants.DEFAULT_STATIC_IMAGE = app_cfg.get("default_static_image", "yuexinmiao.png")
     constants.BASE_SWITCH_PROBABILITY = app_cfg.get("base_switch_probability", 50)

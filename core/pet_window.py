@@ -566,6 +566,7 @@ class PetWindow(QWidget):
     def _on_exit_confirmed(self):
         """用户确认退出：保存对话→更新Skill→退出"""
         import shutil
+        from ai.conversation import CONVERSATIONS_DIR as CONV_DIR
         status_parts = []
 
         # 保存当前对话
@@ -577,10 +578,10 @@ class PetWindow(QWidget):
             date_str = datetime.now().strftime("%Y%m%d")
             safe_title = "".join(c for c in title if c.isalnum() or c in "._- ").strip()[:20]
             folder_name = f"{safe_title}_{date_str}"
-            conv_dir = os.path.join("conversations", folder_name)
+            conv_dir = os.path.join(CONV_DIR, folder_name)
             os.makedirs(conv_dir, exist_ok=True)
 
-            src = os.path.join("conversations", f"{self._conversation.id}.json")
+            src = os.path.join(CONV_DIR, f"{self._conversation.id}.json")
             dst = os.path.join(conv_dir, f"{self._conversation.id}.json")
             try:
                 shutil.move(src, dst)

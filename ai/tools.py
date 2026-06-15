@@ -9,9 +9,10 @@ import re
 import subprocess
 import shutil
 import glob as glob_mod
+from utils.paths import get_project_root
 
 # 项目根目录（用于路径安全限制）
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = get_project_root()
 
 
 def _safe_path(file_path: str) -> str:
