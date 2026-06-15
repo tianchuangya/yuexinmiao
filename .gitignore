@@ -27,3 +27,6 @@ venv/
 config.yaml
 skill/skill.md
 __pycache__/
+build/
+dist/
+*.spec

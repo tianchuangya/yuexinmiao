@@ -1,7 +1,11 @@
 """应用启动模块 —— 入口只需调用 start()"""
 
 import sys
-from PyQt5.QtWidgets import QApplication, QInputDialog, QMessageBox
+from PyQt5.QtWidgets import (
+    QApplication, QInputDialog, QMessageBox, QDialog,
+    QVBoxLayout, QLabel, QPushButton, QHBoxLayout
+)
+from PyQt5.QtCore import Qt
 
 from . import constants
 from .pet_window import PetWindow
@@ -54,6 +58,9 @@ def start():
         sys.exit(0)
     constants.PROBABILITY_INCREMENT = inc
 
+    # ---- 关于弹窗 ----
+    _show_about_dialog(ai_enabled)
+
     # ---- 初始化 AI 模块（如果配置有效） ----
     ai_client = None
     skill_mgr = None
@@ -77,16 +84,95 @@ def start():
         pet.show()
         windows.append(pet)
 
-    QMessageBox.information(
-        None, "提示",
-        f"参数已设置：\n猫数量={constants.NUM_CATS}\n"
-        f"基础概率={constants.BASE_SWITCH_PROBABILITY}%\n"
-        f"增量={constants.PROBABILITY_INCREMENT}%\n"
-        f"AI功能={'已启用' if ai_enabled else '已禁用（配置无效）'}"
-    )
-
     app.lastWindowClosed.connect(app.quit)
     sys.exit(app.exec_())
+
+
+def _show_about_dialog(ai_enabled: bool):
+    """显示关于弹窗（声明 + 博客链接）"""
+    dlg = QDialog()
+    dlg.setWindowTitle("关于 月星猫")
+    dlg.setFixedSize(420, 270)
+    dlg.setWindowFlags(dlg.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+    dlg.setStyleSheet("""
+        QDialog { background-color: #2a2a35; }
+        QLabel { color: #ddd; font-size: 13px; }
+        QPushButton { padding: 6px 20px; }
+    """)
+
+    layout = QVBoxLayout(dlg)
+    layout.setContentsMargins(20, 16, 20, 12)
+    layout.setSpacing(10)
+
+    # 声明文字
+    text1 = QLabel("本应用由 是天创呀 开发")
+    text1.setAlignment(Qt.AlignCenter)
+    text1.setStyleSheet("font-size: 15px; font-weight: bold; color: #fff;")
+    layout.addWidget(text1)
+
+    text2 = QLabel("图片源于网上，免费使用，禁止盗取商用！")
+    text2.setAlignment(Qt.AlignCenter)
+    text2.setStyleSheet("color: #f80; font-size: 13px;")
+    layout.addWidget(text2)
+
+    # 博客链接（可点击）
+    link_label = QLabel(
+        '<a href="https://tianchuangya.cc/start" style="color: #7af; text-decoration: none;">'
+        '🌐 https://tianchuangya.cc/start</a>'
+    )
+    link_label.setAlignment(Qt.AlignCenter)
+    link_label.setOpenExternalLinks(True)
+    link_label.setCursor(Qt.PointingHandCursor)
+    link_label.setStyleSheet("font-size: 13px;")
+    layout.addWidget(link_label)
+
+    # GitHub 开源地址
+    github_label = QLabel(
+        '<a href="https://github.com/tianchuangya/yuexinmiao" style="color: #8af; text-decoration: none;">'
+        '⭐ GitHub 项目开源地址</a>'
+    )
+    github_label.setAlignment(Qt.AlignCenter)
+    github_label.setOpenExternalLinks(True)
+    github_label.setCursor(Qt.PointingHandCursor)
+    github_label.setStyleSheet("font-size: 13px;")
+    layout.addWidget(github_label)
+
+    # 咖啡链接
+    coffee_label = QLabel(
+        '<a href="https://tianchuangya.cc/money" style="color: #fc8; text-decoration: none;">'
+        '☕ 可以请作者喝杯咖啡嘛？</a>'
+    )
+    coffee_label.setAlignment(Qt.AlignCenter)
+    coffee_label.setOpenExternalLinks(True)
+    coffee_label.setCursor(Qt.PointingHandCursor)
+    coffee_label.setStyleSheet("font-size: 13px;")
+    layout.addWidget(coffee_label)
+
+    # AI 状态
+    ai_status = QLabel(f"AI 功能：{'✅ 已启用' if ai_enabled else '⚠️ 已禁用（配置无效）'}")
+    ai_status.setAlignment(Qt.AlignCenter)
+    ai_status.setStyleSheet(f"color: {'#8f8' if ai_enabled else '#f88'}; font-size: 11px;")
+    layout.addWidget(ai_status)
+
+    layout.addSpacing(4)
+
+    # 关闭按钮
+    btn_layout = QHBoxLayout()
+    btn_layout.addStretch()
+    close_btn = QPushButton("开始使用")
+    close_btn.setStyleSheet("""
+        QPushButton {
+            background: rgba(100,160,240,0.8); color: #fff;
+            border: none; border-radius: 8px; font-size: 13px; font-weight: bold;
+        }
+        QPushButton:hover { background: rgba(100,160,240,1); }
+    """)
+    close_btn.clicked.connect(dlg.accept)
+    btn_layout.addWidget(close_btn)
+    btn_layout.addStretch()
+    layout.addLayout(btn_layout)
+
+    dlg.exec_()
 
 
 def _validate_ai_config() -> bool:
