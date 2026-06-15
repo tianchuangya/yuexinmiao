@@ -177,10 +177,9 @@ def _show_about_dialog(ai_enabled: bool):
 
 
 def _validate_ai_config() -> bool:
-    """验证 AI 配置是否有效，失败则弹窗提示，返回 False"""
+    """验证 AI 配置是否有效，失败则弹窗提示具体原因"""
     ai_cfg = get_ai_config()
     api_key = ai_cfg.get("api_key", "")
-    base_url = ai_cfg.get("base_url", "")
 
     if not api_key:
         constants.AI_ENABLED = False
@@ -189,15 +188,16 @@ def _validate_ai_config() -> bool:
     try:
         from ai.client import AIClient
         client = AIClient(ai_cfg)
-        if client.validate():
+        ok, msg = client.validate()
+        if ok:
             constants.AI_ENABLED = True
             return True
         else:
-            _warn_ai_disabled("API 验证失败：无法连接到 AI 服务。\n请检查 base_url 和 api_key 是否正确。")
+            _warn_ai_disabled(msg)
             constants.AI_ENABLED = False
             return False
     except Exception as e:
-        _warn_ai_disabled(f"AI 配置验证异常：{str(e)}")
+        _warn_ai_disabled(f"初始化异常：{str(e)}")
         constants.AI_ENABLED = False
         return False
 

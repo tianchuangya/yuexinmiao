@@ -84,19 +84,35 @@ class AIClient:
                 api_key=self.api_key,
                 base_url=self.base_url,
             )
-        except ImportError:
-            print("[AI] 警告：openai 库未安装，AI 功能不可用。pip install openai")
+            self._init_error = None
+        except ImportError as e:
+            self._init_error = f"openai 库未安装: {e}"
+            print(f"[AI] 警告：{self._init_error}")
+            self._client = None
+        except Exception as e:
+            self._init_error = f"初始化 OpenAI 客户端失败: {e}"
+            print(f"[AI] 警告：{self._init_error}")
             self._client = None
 
-    def validate(self) -> bool:
+    def validate(self):
+        """返回 (成功:bool, 消息:str)"""
         if self._client is None:
-            return False
+            return False, self._init_error or "AI 客户端未初始化"
         try:
             self._client.models.list()
-            return True
+            return True, "连接成功"
         except Exception as e:
-            print(f"[AI] 配置验证失败: {e}")
-            return False
+            err = str(e)
+            if "401" in err or "Unauthorized" in err:
+                msg = "API Key 无效，请检查 config.yaml 中的 api_key"
+            elif "404" in err or "Not Found" in err:
+                msg = f"API 地址无法访问，请检查 base_url"
+            elif "Connection" in err or "connect" in err:
+                msg = f"无法连接 API 服务，请检查网络或 base_url"
+            else:
+                msg = f"验证失败: {err[:200]}"
+            print(f"[AI] {msg}")
+            return False, msg
 
     # ==================== 流式对话（含工具调用循环）====================
 
